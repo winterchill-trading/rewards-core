@@ -10,6 +10,7 @@ module Entry = Entry
 module Points_account = Points_account
 module Refusal = Refusal
 module Convert = Convert
+module Clawback_rule = Clawback_rule
 module Earn_rules = Earn_rules
 module Benefit = Benefit
 module Tier = Tier

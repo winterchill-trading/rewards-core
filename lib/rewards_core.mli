@@ -45,6 +45,10 @@ module Refusal = Refusal
 (** Exact conversion between the spend, basis and payout currencies. *)
 module Convert = Convert
 
+(** How many points a refund takes back: the default cumulative rule and a per-refund
+    proportional one. *)
+module Clawback_rule = Clawback_rule
+
 (** Points for purchases, clawback for refunds, bonuses for actions. *)
 module Earn_rules = Earn_rules
 
