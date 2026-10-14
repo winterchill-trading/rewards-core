@@ -7,9 +7,9 @@
     returns [Already_booked] with the first entry, and a call that reuses an event id
     with different content is refused with [Cause_conflict]. A zero-point result (a
     category that earns nothing, nothing left to expire) is [Nothing_to_book] and
-    stores nothing; refunds are the exception (see {!refund_purchase}).
+    stores nothing; refunds are the exception (see [refund_purchase]).
 
-    The engine never touches the money ledger: {!redeem} returns the redemption, and the
+    The engine never touches the money ledger: [redeem] returns the redemption, and the
     caller books {!Booking.cashback} into its journal once the redemption is
     [Completed]. *)
 
