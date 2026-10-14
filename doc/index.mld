@@ -14,7 +14,8 @@ entries and redemptions behind {!Rewards_core.Store.S}.
   expire, redeem) over any store and monad.
 - {!Rewards_core.Points_account} and {!Rewards_core.Entry}: the ledger rules (balance
   never negative, one entry per cause).
-- {!Rewards_core.Earn_rules}, {!Rewards_core.Tiers}, {!Rewards_core.Cashback},
+- {!Rewards_core.Earn_rules}, {!Rewards_core.Clawback_rule}, {!Rewards_core.Tiers},
+  {!Rewards_core.Cashback},
   {!Rewards_core.Expiry}: the pure rules.
 - {!Rewards_core.Booking}: the cash entry for a completed redemption.
 - {!Rewards_core.Summary} and {!Rewards_core.Statement}: what a customer sees.

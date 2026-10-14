@@ -100,6 +100,7 @@ balance 33, tier Standard (1233 window points, 82% of the way to the next), rede
 | `Entry`, `Earning` | One ledger line, with how a purchase's points were computed |
 | `Points_account` | A customer's entries folded: balance, lifetime earned, causes; `apply` enforces the rules |
 | `Earn_rules` | Basis currency, points per unit, category multipliers, action bonuses; purchase and clawback arithmetic |
+| `Clawback_rule` | How many points a refund takes back: `Cumulative` (default) or `Proportional`, or your own; passed to `Engine.create ~clawback` |
 | `Benefit`, `Tier`, `Tiers` | Tier ladder over a rolling window; spread caps, fee schedules (`Money.Fee.t`) and perks |
 | `Cashback` | Steps, value per step, minimum and maximum; quotes converted and rounded down |
 | `Expiry` | `Never` or `After_days n`, with lots spent earliest-expiring first |
