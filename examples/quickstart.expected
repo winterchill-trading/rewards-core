@@ -1,0 +1,8 @@
+card_purchase:card-tx-1       +1260
+card_purchase:card-tx-1      (already booked)
+card_purchase:card-tx-2         +38
+nothing to book
+card_refund:card-rf-1          -315
+action:first_exchange          +250
+cashback 6.00 EUR, ledger key rewards:redemption:redeem-req-1
+balance 33, tier Standard (1233 window points, 82% of the way to the next), redeemable 0
