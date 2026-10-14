@@ -27,6 +27,7 @@ type t =
       ; got : Money.Currency.t
       }
   | Purchase_not_found of Source_id.t
+  | Contended
   | Invalid of Error.t
 [@@deriving sexp_of]
 
@@ -43,6 +44,7 @@ let code = function
   | Redemption_conflict _ -> "REDEMPTION_CONFLICT"
   | Currency_mismatch _ -> "CURRENCY_MISMATCH"
   | Purchase_not_found _ -> "PURCHASE_NOT_FOUND"
+  | Contended -> "CONTENDED"
   | Invalid _ -> "INVALID"
 ;;
 

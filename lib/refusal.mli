@@ -32,13 +32,15 @@ type t =
       ; got : Money.Currency.t
       }
   | Purchase_not_found of Source_id.t (** a refund names a purchase that earned nothing *)
+  | Contended
+  (** other writers kept changing the customer's ledger; the operation can be retried *)
   | Invalid of Error.t (** malformed input, with the reason *)
 [@@deriving sexp_of]
 
 (** A stable upper-case code per case: [INSUFFICIENT_POINTS], [TOO_SMALL], [TOO_LARGE],
     [STEP], [RATE_UNAVAILABLE], [RATE_MISMATCH], [ROUNDS_TO_ZERO], [UNKNOWN_ACTION],
     [CAUSE_CONFLICT], [REDEMPTION_CONFLICT], [CURRENCY_MISMATCH], [PURCHASE_NOT_FOUND],
-    [INVALID]. *)
+    [CONTENDED], [INVALID]. *)
 val code : t -> string
 
 (** The refusal as an error, its code first. *)
