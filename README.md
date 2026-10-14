@@ -41,6 +41,7 @@ Then add `rewards-core` to the `libraries` of a dune stanza. Build: `dune build`
 open! Core
 open Rewards_core
 
+(* [program] and [eur] are defined in examples/quickstart.ml. *)
 module Store = Store_memory.Make (Monad.Ident)
 module Rewards = Engine.Make (Monad.Ident) (Store)
 
