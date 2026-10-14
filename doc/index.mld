@@ -1,3 +1,27 @@
 {0 rewards-core}
 
-Loyalty points for banks as pure values and state machines.
+Loyalty points for banks as pure values and state machines: an append-only points
+ledger per customer, earn rules for settled card spend, one-off action bonuses, tiers
+over a rolling window, cashback redemption booked through [ledger], an expiry policy
+and points statements. Nothing here persists or opens a connection; a service keeps the
+entries and redemptions behind {!Rewards_core.Store.S}.
+
+{1 Where to start}
+
+- {!Rewards_core.Program}: the configuration of a programme (earn rules, tiers,
+  cashback, expiry).
+- {!Rewards_core.Engine}: the operations (settle a purchase, refund, bonus, adjust,
+  expire, redeem) over any store and monad.
+- {!Rewards_core.Points_account} and {!Rewards_core.Entry}: the ledger rules (balance
+  never negative, one entry per cause).
+- {!Rewards_core.Earn_rules}, {!Rewards_core.Tiers}, {!Rewards_core.Cashback},
+  {!Rewards_core.Expiry}: the pure rules.
+- {!Rewards_core.Booking}: the cash entry for a completed redemption.
+- {!Rewards_core.Summary} and {!Rewards_core.Statement}: what a customer sees.
+- {!Rewards_core.Store_memory} and {!Rewards_core.Store_conformance}: an in-memory store
+  and the scenarios any store must pass.
+
+{1 Example}
+
+[examples/quickstart.ml] in the repository runs a small programme from purchases to a
+booked cashback; [dune test] checks its output.
