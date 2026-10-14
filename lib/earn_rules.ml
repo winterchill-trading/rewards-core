@@ -85,7 +85,8 @@ let refunded (entries : Entry.t list) =
   List.filter_map entries ~f:(fun e -> Option.map e.earning ~f:(fun x -> x.spend))
 ;;
 
-let clawback ~(purchase : Entry.t) ~earlier ~refund ~balance =
+let clawback_with ~rule ~(purchase : Entry.t) ~earlier ~refund ~balance =
+  let module Rule = (val rule : Clawback_rule.S) in
   let open Result.Let_syntax in
   let%bind (earning : Earning.t) =
     match purchase.earning with
@@ -113,15 +114,17 @@ let clawback ~(purchase : Entry.t) ~earlier ~refund ~balance =
   in
   let%map before = Amount.sum currency (refunded earlier) |> Refusal.of_or_error in
   let spend = Amount.minor_units earning.spend in
-  let clawed_by total =
-    (* Proportional and cumulative: the share for all refunds so far, minus the share for
-       the refunds before this one, so rounding never adds up past the purchase. *)
-    let total = Z.min total spend in
-    Z.fdiv (Z.mul (Z.of_int purchase.points) total) spend
+  let points =
+    Rule.points
+      ~earned:purchase.points
+      ~spend:earning.spend
+      ~refunded_before:before
+      ~refund
   in
-  let before_units = Amount.minor_units before in
-  let after_units = Z.add before_units (Amount.minor_units refund) in
-  let points = Z.to_int (Z.sub (clawed_by after_units) (clawed_by before_units)) in
+  (* Whatever the rule says, a purchase never gives back more than it earned (earlier
+     clawbacks are booked as negative points) and the balance never goes below zero. *)
+  let already = List.sum (module Int) earlier ~f:(fun (e : Entry.t) -> -e.points) in
+  let points = Int.max 0 (Int.min points (purchase.points - already)) in
   let points = Int.min points (Int.max balance 0) in
   let basis_amount =
     Amount.mul_ratio
@@ -130,6 +133,10 @@ let clawback ~(purchase : Entry.t) ~earlier ~refund ~balance =
       (Q.make (Z.min (Amount.minor_units refund) spend) spend)
   in
   points, { earning with spend = refund; basis_amount }
+;;
+
+let clawback ~purchase ~earlier ~refund ~balance =
+  clawback_with ~rule:Clawback_rule.default ~purchase ~earlier ~refund ~balance
 ;;
 
 module Stable = struct

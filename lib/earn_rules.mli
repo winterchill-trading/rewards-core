@@ -9,13 +9,15 @@
     refused with [Rate_unavailable]; booking it later, once a rate exists, still earns
     once because the cause is the purchase id.
 
-    {b Refunds.} A refund claws back points in proportion to the refunded share of the
-    purchase: after refunds totalling [r] of a purchase of [s] that earned [p], the
-    purchase has given back [floor (p * min (r, s) / s)] points in all, so a full refund
-    returns exactly [p] and partial refunds never add up to more. Every refund is booked,
-    with zero points if need be, so the refunded total is always known and a series of
-    small refunds cannot dodge the clawback. A clawback is capped at the customer's
-    balance at the time; points already spent are not recovered later.
+    {b Refunds.} By default ({!Clawback_rule.Cumulative}) a refund claws back points in
+    proportion to the refunded share of the purchase: after refunds totalling [r] of a
+    purchase of [s] that earned [p], the purchase has given back
+    [floor (p * min (r, s) / s)] points in all, so a full refund returns exactly [p] and
+    partial refunds never add up to more. Every refund is booked, with zero points if need
+    be, so the refunded total is always known and a series of small refunds cannot dodge
+    the clawback. A clawback is capped at the customer's balance at the time; points
+    already spent are not recovered later. Another rule, such as
+    {!Clawback_rule.Proportional}, can be passed to {!clawback_with} or to the engine.
 
     {b Actions.} A one-off action (first exchange, first goal reached) earns its bonus
     once per customer, whatever the number of times the event is reported. *)
@@ -62,9 +64,20 @@ val purchase
 (** The points a refund takes back from [purchase] (the purchase's [Earn] entry), given
     the refunds booked against it before ([earlier]) and the customer's [balance]. The
     result is zero or positive; the entry books its negation. Refuses a refund in another
-    currency than the purchase. *)
+    currency than the purchase. Same as [clawback_with ~rule:Clawback_rule.default]. *)
 val clawback
   :  purchase:Entry.t
+  -> earlier:Entry.t list
+  -> refund:Money.Amount.t
+  -> balance:int
+  -> (int * Earning.t, Refusal.t) Result.t
+
+(** {!clawback} with the points worked out by [rule] (see {!Clawback_rule}). The rule's
+    answer is clamped to zero or more, to what the purchase has left after the clawbacks
+    in [earlier], and to [balance]. *)
+val clawback_with
+  :  rule:(module Clawback_rule.S)
+  -> purchase:Entry.t
   -> earlier:Entry.t list
   -> refund:Money.Amount.t
   -> balance:int
