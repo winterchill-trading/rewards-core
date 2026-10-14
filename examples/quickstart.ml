@@ -1,5 +1,5 @@
-(* A small card programme: earn on settled spend, claw back a refund, redeem cashback
-   and book it into a ledger. *)
+(* A small card programme: earn on settled spend, claw back a refund, redeem cashback and
+   book it into a ledger. *)
 
 open! Core
 open Rewards_core
