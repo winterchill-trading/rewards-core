@@ -23,7 +23,11 @@ let%expect_test "tier follows the window total; redemptions do not lower it" =
   let entries =
     [ entry ~seq:0 ~cause:(Adjustment (src "a1")) ~points:1_499 ~at:(day 0)
     ; entry ~seq:1 ~cause:(Action (act "first_exchange")) ~points:1 ~at:(day 1)
-    ; entry ~seq:2 ~cause:(Redemption (Redemption_id.of_string "r1")) ~points:(-1_000) ~at:(day 2)
+    ; entry
+        ~seq:2
+        ~cause:(Redemption (Redemption_id.of_string "r1"))
+        ~points:(-1_000)
+        ~at:(day 2)
     ]
   in
   show (Tiers.status tiers [] ~now:(day 0));
@@ -57,7 +61,8 @@ let%expect_test "top tier and benefits" =
         ~gold_spread:(Tier.fx_spread_bps gold ~standard:50 : int)
         ~silver_spread:
           (Tier.fx_spread_bps (Tiers.tier_for tiers ~points:1_500) ~standard:50 : int)
-        ~bronze_spread:(Tier.fx_spread_bps (Tiers.tier_for tiers ~points:0) ~standard:50 : int)
+        ~bronze_spread:
+          (Tier.fx_spread_bps (Tiers.tier_for tiers ~points:0) ~standard:50 : int)
         ~tight_standard:(Tier.fx_spread_bps gold ~standard:10 : int)
         ~eur_fee:(Tier.fee gold ~product:"exchange" ~standard : Money.Fee.t)
         ~usd_fee:(Tier.fee gold ~product:"exchange" ~standard:usd_standard : Money.Fee.t)

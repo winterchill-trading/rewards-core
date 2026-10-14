@@ -26,7 +26,8 @@ let%expect_test "stable bin_prot digests" =
     ; "Redemption", [%bin_digest: Redemption.Stable.V1.t]
     ]
     ~f:(fun (name, digest) -> printf "%-15s %s\n" name digest);
-  [%expect {|
+  [%expect
+    {|
     User_id         d9a8da25d5656b016fb4dbdc2e4197fb
     Source_id       d9a8da25d5656b016fb4dbdc2e4197fb
     Redemption_id   d9a8da25d5656b016fb4dbdc2e4197fb
@@ -71,10 +72,13 @@ let%expect_test "values round trip through bin_prot and sexp" =
        ~rate:(Some eur_usd)
        ~at:t0
      : _);
-  let entry = Rewards.account e user |> Or_error.ok_exn |> Points_account.entries |> List.hd_exn in
+  let entry =
+    Rewards.account e user |> Or_error.ok_exn |> Points_account.entries |> List.hd_exn
+  in
   round_trip (module Entry.Stable.V1) entry;
   print_s [%sexp (entry : Entry.Stable.V1.t)];
-  [%expect {|
+  [%expect
+    {|
     ((user user-1) (seq 0) (cause (Card_purchase tx-1)) (points 60)
      (at "2026-03-01 10:00:00Z")
      (earning
@@ -88,12 +92,14 @@ let%expect_test "values round trip through bin_prot and sexp" =
 ;;
 
 let%expect_test "readers validate" =
-  let read s = Or_error.try_with (fun () -> Entry.Stable.V1.t_of_sexp (Sexp.of_string s)) in
+  let read s =
+    Or_error.try_with (fun () -> Entry.Stable.V1.t_of_sexp (Sexp.of_string s))
+  in
   print_s
     [%sexp
       (read
-         "((user u) (seq 0) (cause (Card_purchase p)) (points -5) (at \"2026-03-01 10:00:00Z\") \
-          (earning ()) (note \"\"))"
+         "((user u) (seq 0) (cause (Card_purchase p)) (points -5) (at \"2026-03-01 \
+          10:00:00Z\") (earning ()) (note \"\"))"
        |> Or_error.ignore_m
        : unit Or_error.t)];
   print_s
@@ -108,7 +114,8 @@ let%expect_test "readers validate" =
                Never))"))
        |> Or_error.ignore_m
        : unit Or_error.t)];
-  [%expect {|
+  [%expect
+    {|
     (Error ("points have the wrong sign for the kind" (kind Earn) (points -5)))
     (Error
      ("cashback and earning use different basis currencies" (earn EUR)

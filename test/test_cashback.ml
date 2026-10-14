@@ -52,7 +52,12 @@ let%expect_test "a conversion that pays nothing is refused" =
   in
   let tiny = rate ~base:Money.Currency.eur ~quote:Money.Currency.usd "0.5" in
   show
-    (Cashback.quote rules ~points:1 ~balance:10 ~currency:Money.Currency.usd ~rate:(Some tiny));
+    (Cashback.quote
+       rules
+       ~points:1
+       ~balance:10
+       ~currency:Money.Currency.usd
+       ~rate:(Some tiny));
   [%expect {| (ROUNDS_TO_ZERO (refusal Rounds_to_zero)) |}]
 ;;
 

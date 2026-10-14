@@ -88,6 +88,6 @@ let print_outcome r =
   | Error refusal -> print_s [%message "refused" (refusal : Refusal.t)]
 ;;
 
-let balance engine user =
-  (Rewards.account engine user |> Or_error.ok_exn |> Points_account.balance : int)
+let balance engine user : int =
+  Rewards.account engine user |> Or_error.ok_exn |> Points_account.balance
 ;;

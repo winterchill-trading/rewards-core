@@ -41,7 +41,8 @@ let gen_op =
     [ ( 4.
       , let%map id = Int.gen_incl 0 15
         and cents = Int.gen_incl 1 50_000
-        and category = Quickcheck.Generator.of_list [ "travel"; "groceries"; "cash"; "other" ]
+        and category =
+          Quickcheck.Generator.of_list [ "travel"; "groceries"; "cash"; "other" ]
         and foreign = Bool.quickcheck_generator
         and day in
         Settle { id; cents; category; foreign; day } )
@@ -52,7 +53,8 @@ let gen_op =
         and day in
         Refund { id; purchase; cents; day } )
     ; ( 1.
-      , let%map code = Quickcheck.Generator.of_list [ "first_exchange"; "first_goal"; "nope" ]
+      , let%map code =
+          Quickcheck.Generator.of_list [ "first_exchange"; "first_goal"; "nope" ]
         and day in
         Action { code; day } )
     ; ( 1.
@@ -133,7 +135,11 @@ let run e op =
      | Ok { status = Completed; _ } -> balance e user < before
      | Ok _ | Error _ -> false)
   | Expire { day } ->
-    Rewards.expire e ~user ~as_of:(Time_ns.to_date (at day) ~zone:Time_float.Zone.utc) ~at:(at day)
+    Rewards.expire
+      e
+      ~user
+      ~as_of:(Time_ns.to_date (at day) ~zone:Time_float.Zone.utc)
+      ~at:(at day)
     |> booked
 ;;
 
@@ -141,7 +147,8 @@ let check_invariants e =
   let account = Rewards.account e user |> Or_error.ok_exn in
   let entries = Points_account.entries account in
   assert (Points_account.balance account >= 0);
-  assert (Points_account.balance account = List.sum (module Int) entries ~f:(fun e -> e.points));
+  assert (
+    Points_account.balance account = List.sum (module Int) entries ~f:(fun e -> e.points));
   (* Every purchase gives back at most what it earned. *)
   List.iter entries ~f:(fun (p : Entry.t) ->
     match p.cause with
@@ -203,7 +210,12 @@ let%test_unit "cashback never pays more than the points are worth" =
     ~f:(fun (points, balance, price) ->
       let r = rate ~base:Money.Currency.eur ~quote:Money.Currency.jpy price in
       match
-        Cashback.quote cashback ~points ~balance ~currency:Money.Currency.jpy ~rate:(Some r)
+        Cashback.quote
+          cashback
+          ~points
+          ~balance
+          ~currency:Money.Currency.jpy
+          ~rate:(Some r)
       with
       | Error _ -> ()
       | Ok q ->

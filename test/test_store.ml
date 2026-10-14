@@ -28,13 +28,20 @@ module Racing_rewards = Engine.Make (Monad.Ident) (Racing)
 let%expect_test "a decision made on a stale ledger is made again" =
   let store = Racing.create () in
   let e = Racing_rewards.create (program ()) store in
-  ignore (Racing_rewards.adjust e ~user ~id:(src "seed") ~points:1_200 ~reason:"" ~at:t0 : _);
+  ignore
+    (Racing_rewards.adjust e ~user ~id:(src "seed") ~points:1_200 ~reason:"" ~at:t0 : _);
   (* While a redemption of 1,000 points is being decided, another writer spends 500. *)
   Racing.before_append
   := Some
        (fun t ->
          let competing =
-           Entry.create ~user ~seq:1 ~cause:(Adjustment (src "other")) ~points:(-500) ~at:t0 ()
+           Entry.create
+             ~user
+             ~seq:1
+             ~cause:(Adjustment (src "other"))
+             ~points:(-500)
+             ~at:t0
+             ()
            |> Or_error.ok_exn
          in
          ignore (Store.append t competing : Store_types.Append.t));
@@ -53,7 +60,10 @@ let%expect_test "a decision made on a stale ledger is made again" =
    | Ok r -> print_s [%sexp (r.status : Redemption.Status.t)]
    | Error refusal -> print_s [%sexp (refusal : Refusal.t)]);
   let account = Racing_rewards.account e user |> Or_error.ok_exn in
-  printf "balance %d after %d entries\n" (Points_account.balance account) (Points_account.length account);
+  printf
+    "balance %d after %d entries\n"
+    (Points_account.balance account)
+    (Points_account.length account);
   [%expect
     {|
     (Refused (code INSUFFICIENT_POINTS))

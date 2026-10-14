@@ -62,7 +62,9 @@ let%expect_test "earn, refund, bonus and adjust are idempotent by cause" =
     ~amount:(eur "1.00")
     ~at:(day 1)
   |> print_outcome;
-  let action a = Rewards.complete_action e ~user ~action:(act a) ~at:(day 2) |> print_outcome in
+  let action a =
+    Rewards.complete_action e ~user ~action:(act a) ~at:(day 2) |> print_outcome
+  in
   action "first_exchange";
   action "first_exchange";
   action "first_flight";
@@ -125,7 +127,13 @@ let show_redemption r =
 let%expect_test "cashback redemption: points spent once, cash booked once" =
   let e = engine () in
   ignore (Rewards.adjust e ~user ~id:(src "seed") ~points:2_345 ~reason:"seed" ~at:t0 : _);
-  let redeem ?(account = customer) ?(currency = Money.Currency.eur) ?rate ?(points = 2_300) id =
+  let redeem
+    ?(account = customer)
+    ?(currency = Money.Currency.eur)
+    ?rate
+    ?(points = 2_300)
+    id
+    =
     Rewards.redeem
       e
       ~id:(Redemption_id.of_string id)
@@ -162,8 +170,7 @@ let%expect_test "cashback redemption: points spent once, cash booked once" =
                 (Booking.Chart.default.rewards_expense Money.Currency.eur)
                 Money.Currency.eur))];
   print_s
-    [%sexp
-      (Booking.apply b [ entry ] |> Or_error.ignore_m |> Result.is_error : bool)];
+    [%sexp (Booking.apply b [ entry ] |> Or_error.ignore_m |> Result.is_error : bool)];
   [%expect
     {|
     ((id rd-1) (status Completed) (points 2300) (amount "11.50 EUR"))
@@ -182,7 +189,11 @@ let%expect_test "a redemption interrupted after it was recorded finishes as pric
   ignore (Rewards.adjust e ~user ~id:(src "seed") ~points:5_000 ~reason:"seed" ~at:t0 : _);
   (* A crash right after the insert: the record is Accepted, no points spent yet. *)
   let quote =
-    Cashback.quote cashback ~points:2_000 ~balance:5_000 ~currency:Money.Currency.usd
+    Cashback.quote
+      cashback
+      ~points:2_000
+      ~balance:5_000
+      ~currency:Money.Currency.usd
       ~rate:(Some eur_usd)
     |> Result.ok
     |> Option.value_exn
@@ -221,7 +232,11 @@ let%expect_test "a redemption whose points vanished in the meantime is refused" 
   let e = Rewards.create (program ()) store in
   ignore (Rewards.adjust e ~user ~id:(src "seed") ~points:1_000 ~reason:"seed" ~at:t0 : _);
   let quote =
-    Cashback.quote cashback ~points:1_000 ~balance:1_000 ~currency:Money.Currency.eur
+    Cashback.quote
+      cashback
+      ~points:1_000
+      ~balance:1_000
+      ~currency:Money.Currency.eur
       ~rate:None
     |> Result.ok
     |> Option.value_exn
@@ -252,7 +267,8 @@ let%expect_test "a redemption whose points vanished in the meantime is refused" 
   again ();
   print_s
     [%sexp
-      (Booking.cashback Booking.Chart.default
+      (Booking.cashback
+         Booking.Chart.default
          (Store.redemptions store |> List.hd_exn)
          ~recorded_at:t0
        |> Or_error.ignore_m
@@ -325,15 +341,14 @@ let%expect_test "summary and statement" =
        ~now:(day 22)
      : _);
   print_s [%sexp (Rewards.summary e ~user ~now:(day 22) |> Or_error.ok_exn : Summary.t)];
-  let st =
-    Rewards.statement e ~user ~from:(day 1) ~until:(day 30) |> Or_error.ok_exn
-  in
+  let st = Rewards.statement e ~user ~from:(day 1) ~until:(day 30) |> Or_error.ok_exn in
   print_s
     [%message
       ""
         ~opening:(st.opening : int)
         ~lines:
-          (List.map st.lines ~f:(fun l -> Entry.key l.entry, l.entry.points, l.balance_after)
+          (List.map st.lines ~f:(fun l ->
+             Entry.key l.entry, l.entry.points, l.balance_after)
            : (string * int * int) list)
         ~totals:(st.totals : (Kind.t * int) list)
         ~closing:(st.closing : int)];

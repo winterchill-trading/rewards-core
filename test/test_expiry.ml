@@ -9,8 +9,16 @@ let entry ~seq ~cause ~points ~at =
 let%expect_test "lots expire first in, first out" =
   let policy = Expiry.Policy.After_days 30 in
   let entries =
-    [ entry ~seq:0 ~cause:(Adjustment (src "a")) ~points:100 ~at:(time "2026-01-10 23:59:00Z")
-    ; entry ~seq:1 ~cause:(Adjustment (src "b")) ~points:50 ~at:(time "2026-01-20 08:00:00Z")
+    [ entry
+        ~seq:0
+        ~cause:(Adjustment (src "a"))
+        ~points:100
+        ~at:(time "2026-01-10 23:59:00Z")
+    ; entry
+        ~seq:1
+        ~cause:(Adjustment (src "b"))
+        ~points:50
+        ~at:(time "2026-01-20 08:00:00Z")
     ; entry
         ~seq:2
         ~cause:(Redemption (Redemption_id.of_string "r"))

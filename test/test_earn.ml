@@ -35,18 +35,34 @@ let%expect_test "purchases earn floor(basis units) x multiplier" =
 
 let%expect_test "foreign spend converts at the given rate, in either direction" =
   (* 110.00 USD at 1 EUR = 1.10 USD is exactly 100 EUR; 109.99 USD is 99.99... EUR. *)
-  show (Earn_rules.purchase earn_rules ~spend:(usd "110.00") ~category:(cat "x") ~rate:(Some eur_usd));
-  show (Earn_rules.purchase earn_rules ~spend:(usd "109.99") ~category:(cat "x") ~rate:(Some eur_usd));
+  show
+    (Earn_rules.purchase
+       earn_rules
+       ~spend:(usd "110.00")
+       ~category:(cat "x")
+       ~rate:(Some eur_usd));
+  show
+    (Earn_rules.purchase
+       earn_rules
+       ~spend:(usd "109.99")
+       ~category:(cat "x")
+       ~rate:(Some eur_usd));
   show
     (Earn_rules.purchase
        earn_rules
        ~spend:(usd "110.00")
        ~category:(cat "x")
        ~rate:(Some (Money.Rate.inverse eur_usd)));
-  show (Earn_rules.purchase earn_rules ~spend:(usd "10.00") ~category:(cat "x") ~rate:None);
   show
-    (Earn_rules.purchase earn_rules ~spend:(usd "10.00") ~category:(cat "x") ~rate:(Some eur_gbp));
-  show (Earn_rules.purchase earn_rules ~spend:(eur "-1.00") ~category:(cat "x") ~rate:None);
+    (Earn_rules.purchase earn_rules ~spend:(usd "10.00") ~category:(cat "x") ~rate:None);
+  show
+    (Earn_rules.purchase
+       earn_rules
+       ~spend:(usd "10.00")
+       ~category:(cat "x")
+       ~rate:(Some eur_gbp));
+  show
+    (Earn_rules.purchase earn_rules ~spend:(eur "-1.00") ~category:(cat "x") ~rate:None);
   [%expect
     {|
     ((points 100) (basis "100.00 EUR") (multiplier 1))
@@ -100,7 +116,8 @@ let%expect_test "refunds claw back in proportion and never more than earned" =
     | Ok (points, _) ->
       printf "refund %s -> %d\n" refund points;
       earlier
-      := !earlier @ [ refund_entry ~seq:(List.length !earlier + 1) ~refund:(eur refund) ~points ]);
+      := !earlier
+         @ [ refund_entry ~seq:(List.length !earlier + 1) ~refund:(eur refund) ~points ]);
   [%expect
     {|
     refund 0.01 -> 0
@@ -131,7 +148,11 @@ let%expect_test "a clawback is capped at the balance" =
 let%expect_test "rule validation" =
   let show r = print_s [%sexp (Or_error.ignore_m r : unit Or_error.t)] in
   show (Earn_rules.create ~basis:Money.Currency.eur ~multipliers:[ cat "a", -1 ] ());
-  show (Earn_rules.create ~basis:Money.Currency.eur ~multipliers:[ cat "a", 1; cat "a", 2 ] ());
+  show
+    (Earn_rules.create
+       ~basis:Money.Currency.eur
+       ~multipliers:[ cat "a", 1; cat "a", 2 ]
+       ());
   show (Earn_rules.create ~basis:Money.Currency.eur ~bonuses:[ act "a", 0 ] ());
   [%expect
     {|
