@@ -20,7 +20,8 @@ let to_string t = String.lowercase (Sexp.to_string (sexp_of_t t))
 let accepts t ~points =
   match t with
   | Earn | Bonus -> points > 0
-  | Reversal | Redeem | Expire -> points < 0
+  | Reversal -> points <= 0
+  | Redeem | Expire -> points < 0
   | Adjustment -> points <> 0
 ;;
 

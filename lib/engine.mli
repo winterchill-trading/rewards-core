@@ -6,8 +6,8 @@
     Every operation is idempotent by its cause: calling it again for the same event
     returns [Already_booked] with the first entry, and a call that reuses an event id
     with different content is refused with [Cause_conflict]. A zero-point result (a
-    category that earns nothing, a refund of a purchase whose points are all spent) is
-    [Nothing_to_book] and stores nothing.
+    category that earns nothing, nothing left to expire) is [Nothing_to_book] and
+    stores nothing; refunds are the exception (see {!refund_purchase}).
 
     The engine never touches the money ledger: {!redeem} returns the redemption, and the
     caller books {!Booking.cashback} into its journal once the redemption is
@@ -47,8 +47,10 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) : sig
     -> at:Time_ns.t
     -> (Outcome.t, Refusal.t) Result.t M.t
 
-  (** Takes points back for a refund of [purchase] (see {!Earn_rules.clawback}). A
-      purchase that earned nothing gives [Nothing_to_book]. *)
+  (** Takes points back for a refund of [purchase] (see {!Earn_rules.clawback}). The
+      refund is booked even when it takes no whole point back, so the next refund of
+      the same purchase sees the full amount refunded. A purchase that earned nothing
+      gives [Nothing_to_book]. *)
   val refund_purchase
     :  t
     -> user:User_id.t

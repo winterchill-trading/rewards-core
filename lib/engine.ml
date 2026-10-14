@@ -112,10 +112,9 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) = struct
               ~refund:amount
               ~balance:(Points_account.balance acct)
           in
-          Ok
-            (if points > 0
-             then Some { points = -points; earning = Some earning; note = "" }
-             else None))
+          (* Booked even at zero points: later refunds of the purchase are measured
+             against everything refunded so far, which only the entries record. *)
+          Ok (Some { points = -points; earning = Some earning; note = "" }))
   ;;
 
   let complete_action t ~user ~action ~at =

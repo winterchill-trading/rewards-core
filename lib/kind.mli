@@ -6,7 +6,10 @@ open! Core
 type t =
   | Earn (** points for settled spend; positive *)
   | Bonus (** points for a one-off action; positive *)
-  | Reversal (** points taken back when a purchase is refunded; negative *)
+  | Reversal
+  (** points taken back when a purchase is refunded; negative, or zero when the refund
+      is too small to take a whole point back (it is still recorded, so later refunds
+      of the same purchase are measured against the full refunded amount) *)
   | Redeem (** points spent on a redemption; negative *)
   | Adjustment (** a manual correction; either sign, never zero *)
   | Expire (** points that reached the end of their life; negative *)
@@ -16,7 +19,8 @@ type t =
 val to_string : t -> string
 
 (** Whether [points] has the sign this kind requires: positive for [Earn] and [Bonus],
-    negative for [Reversal], [Redeem] and [Expire], non-zero for [Adjustment]. *)
+    negative for [Redeem] and [Expire], zero or negative for [Reversal], non-zero for
+    [Adjustment]. *)
 val accepts : t -> points:int -> bool
 
 (** Counted towards tiers: earned points net of clawbacks and adjustments. Redemptions

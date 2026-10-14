@@ -12,9 +12,10 @@
     {b Refunds.} A refund claws back points in proportion to the refunded share of the
     purchase: after refunds totalling [r] of a purchase of [s] that earned [p], the
     purchase has given back [floor (p * min (r, s) / s)] points in all, so a full refund
-    returns exactly [p] and partial refunds never add up to more. A clawback is capped
-    at the customer's balance at the time; points already spent are not recovered
-    later.
+    returns exactly [p] and partial refunds never add up to more. Every refund is
+    booked, with zero points if need be, so the refunded total is always known and a
+    series of small refunds cannot dodge the clawback. A clawback is capped at the
+    customer's balance at the time; points already spent are not recovered later.
 
     {b Actions.} A one-off action (first exchange, first goal reached) earns its bonus
     once per customer, whatever the number of times the event is reported. *)
@@ -60,7 +61,7 @@ val purchase
 
 (** The points a refund takes back from [purchase] (the purchase's [Earn] entry), given
     the refunds booked against it before ([earlier]) and the customer's [balance]. The
-    result is positive or zero; the entry books its negation. Refuses a refund in another
+    result is zero or positive; the entry books its negation. Refuses a refund in another
     currency than the purchase. *)
 val clawback
   :  purchase:Entry.t
