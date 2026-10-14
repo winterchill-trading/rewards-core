@@ -91,3 +91,32 @@ let print_outcome r =
 let balance engine user : int =
   Rewards.account engine user |> Or_error.ok_exn |> Points_account.balance
 ;;
+
+(* A purchase entry [p1] of [spend] in travel that earned [points], and a refund entry
+   [r<seq>] against it that took back [points]. *)
+let purchase_entry ~points ~spend =
+  let _, earning =
+    Earn_rules.purchase earn_rules ~spend ~category:(cat "travel") ~rate:None
+    |> Result.ok
+    |> Option.value_exn
+  in
+  Entry.create ~user ~seq:0 ~cause:(Card_purchase (src "p1")) ~points ~at:t0 ~earning ()
+  |> Or_error.ok_exn
+;;
+
+let refund_entry ~seq ~refund ~points =
+  let _, earning =
+    Earn_rules.purchase earn_rules ~spend:refund ~category:(cat "travel") ~rate:None
+    |> Result.ok
+    |> Option.value_exn
+  in
+  Entry.create
+    ~user
+    ~seq
+    ~cause:(Card_refund { refund = src (sprintf "r%d" seq); purchase = src "p1" })
+    ~points:(-points)
+    ~at:t0
+    ~earning
+    ()
+  |> Or_error.ok_exn
+;;

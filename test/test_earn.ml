@@ -76,33 +76,6 @@ let%expect_test "foreign spend converts at the given rate, in either direction" 
     |}]
 ;;
 
-let purchase_entry ~points ~spend =
-  let _, earning =
-    Earn_rules.purchase earn_rules ~spend ~category:(cat "travel") ~rate:None
-    |> Result.ok
-    |> Option.value_exn
-  in
-  Entry.create ~user ~seq:0 ~cause:(Card_purchase (src "p1")) ~points ~at:t0 ~earning ()
-  |> Or_error.ok_exn
-;;
-
-let refund_entry ~seq ~refund ~points =
-  let _, earning =
-    Earn_rules.purchase earn_rules ~spend:refund ~category:(cat "travel") ~rate:None
-    |> Result.ok
-    |> Option.value_exn
-  in
-  Entry.create
-    ~user
-    ~seq
-    ~cause:(Card_refund { refund = src (sprintf "r%d" seq); purchase = src "p1" })
-    ~points:(-points)
-    ~at:t0
-    ~earning
-    ()
-  |> Or_error.ok_exn
-;;
-
 let%expect_test "refunds claw back in proportion and never more than earned" =
   (* 10.00 EUR of travel earned 30 points. A refund too small for a whole point is still
      counted by the next one; refunds beyond the purchase take nothing more. *)
