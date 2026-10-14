@@ -55,7 +55,7 @@ Standalone: add the organisation opam repository
   examples get expect tests.
 - Comments for humans at any non-obvious choice (rounding direction, why zero-point
   refunds are booked, why the engine retries).
-- User-visible changes get a line under `Unreleased` in `CHANGES.md`.
+- User-visible changes get a line under the next version in `CHANGES.md`.
 
 ## Dependencies and dependents
 
@@ -74,6 +74,11 @@ poll in a loop. Pushes cancel the running build (`cancel-in-progress`), so on a 
 cache let one run finish before pushing again.
 
 ## Pitfalls
+
+- Changes after 0.1.0 are additive: an optional argument, a new function or a new
+  module. An optional argument on a function whose arguments are all labelled is never
+  erased (warning 16), which is why `Earn_rules.clawback_with` sits beside `clawback`
+  instead of `clawback` gaining `?rule`.
 
 - A workspace build also prints errors from other repositories that are half written;
   filter the output for `File "rewards-core/` before treating it as a failure.
