@@ -74,6 +74,7 @@ let program ?(expiry = Expiry.Policy.Never) () =
   Program.create ~earn:earn_rules ~tiers ~cashback ~expiry |> Or_error.ok_exn
 ;;
 
+module Store_types = Store
 module Store = Store_memory.Make (Monad.Ident)
 module Rewards = Engine.Make (Monad.Ident) (Store)
 
