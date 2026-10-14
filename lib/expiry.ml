@@ -46,36 +46,39 @@ module Policy = struct
   end
 end
 
-(* Lots are kept oldest first; consumption takes from the front. *)
+(* Open points by expiry date. Spending takes from the earliest expiry date first, so
+   entries recorded out of time order (a late settlement) still leave the points that
+   expire last. *)
 let consume lots points =
   let rec go lots points =
-    match lots with
-    | [] -> []
-    | (date, open_) :: rest ->
-      if points >= open_ then go rest (points - open_) else (date, open_ - points) :: rest
+    if points <= 0
+    then lots
+    else (
+      match Map.min_elt lots with
+      | None -> lots
+      | Some (date, open_) ->
+        if points >= open_
+        then go (Map.remove lots date) (points - open_)
+        else Map.set lots ~key:date ~data:(open_ - points))
   in
   go lots points
 ;;
 
 let open_lots ~days entries =
-  List.fold entries ~init:Fqueue.empty ~f:(fun lots (e : Entry.t) ->
+  List.fold entries ~init:Date.Map.empty ~f:(fun lots (e : Entry.t) ->
     if e.points > 0
     then (
       let earned_on = Time_ns.to_date e.at ~zone:Time_float.Zone.utc in
-      Fqueue.enqueue lots (Date.add_days earned_on days, e.points))
-    else Fqueue.of_list (consume (Fqueue.to_list lots) (-e.points)))
-  |> Fqueue.to_list
+      Map.update lots (Date.add_days earned_on days) ~f:(fun prev ->
+        Option.value prev ~default:0 + e.points))
+    else consume lots (-e.points))
 ;;
 
 let schedule (policy : Policy.t) entries =
   match policy with
   | Never -> []
   | After_days days ->
-    open_lots ~days entries
-    |> List.filter ~f:(fun (_, n) -> n > 0)
-    |> List.sort_and_group ~compare:(fun (a, _) (b, _) -> Date.compare a b)
-    |> List.map ~f:(fun group ->
-      fst (List.hd_exn group), List.sum (module Int) group ~f:snd)
+    open_lots ~days entries |> Map.to_alist |> List.filter ~f:(fun (_, n) -> n > 0)
 ;;
 
 let due policy entries ~as_of =

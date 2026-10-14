@@ -2,8 +2,9 @@
 
     Every entry that adds points ([Earn], [Bonus], a positive [Adjustment]) opens a lot.
     Every entry that takes points away ([Redeem], [Reversal], [Expire], a negative
-    [Adjustment]) consumes the oldest open lots first, so the points that leave first
-    are the ones closest to expiring. Under [After_days n], a lot expires at the end of
+    [Adjustment]) consumes the open lots that expire first, so the points that leave
+    first are the ones closest to expiring, even when entries were recorded out of time
+    order. Under [After_days n], a lot expires at the end of
     the UTC day [n] days after the day it was earned; an expiry run on date [d] books
     one [Expire] entry for what is left of every lot whose expiry date is on or before
     [d]. The cause is [Expiry d], so running twice for the same date books once. *)
