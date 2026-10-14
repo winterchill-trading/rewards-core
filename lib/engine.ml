@@ -17,9 +17,13 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) = struct
   type t =
     { program : Program.t
     ; store : Store.t
+    ; clawback : (module Clawback_rule.S)
     }
 
-  let create program store = { program; store }
+  let create ?(clawback = Clawback_rule.default) program store =
+    { program; store; clawback }
+  ;;
+
   let program t = t.program
 
   let account t user =
@@ -104,7 +108,8 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) = struct
         | Some purchase_entry ->
           let open Result.Let_syntax in
           let%bind points, earning =
-            Earn_rules.clawback
+            Earn_rules.clawback_with
+              ~rule:t.clawback
               ~purchase:purchase_entry
               ~earlier:(Points_account.refunds_of acct ~purchase)
               ~refund:amount

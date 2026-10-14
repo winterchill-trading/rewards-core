@@ -25,7 +25,12 @@ end
 module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) : sig
   type t
 
-  val create : Program.t -> Store.t -> t
+  (** An engine over [store]. [clawback] decides how many points a refund takes back,
+      default {!Clawback_rule.default} (cumulative). The rule is not part of the
+      programme's stored form: use the same rule for the life of a programme, or refunds
+      of one purchase may be measured by two rules. *)
+  val create : ?clawback:(module Clawback_rule.S) -> Program.t -> Store.t -> t
+
   val program : t -> Program.t
 
   (** The customer's ledger, folded. Fails if the store returns entries that break the
@@ -45,10 +50,10 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) : sig
     -> at:Time_ns.t
     -> (Outcome.t, Refusal.t) Result.t M.t
 
-  (** Takes points back for a refund of [purchase] (see {!Earn_rules.clawback}). The
-      refund is booked even when it takes no whole point back, so the next refund of the
-      same purchase sees the full amount refunded. A purchase that earned nothing gives
-      [Nothing_to_book]. *)
+  (** Takes points back for a refund of [purchase] with the engine's clawback rule (see
+      {!Earn_rules.clawback_with}). The refund is booked even when it takes no whole point
+      back, so the next refund of the same purchase sees the full amount refunded. A
+      purchase that earned nothing gives [Nothing_to_book]. *)
   val refund_purchase
     :  t
     -> user:User_id.t
