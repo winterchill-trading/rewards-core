@@ -1,7 +1,7 @@
 (** Why an entry exists. A customer's ledger holds at most one entry per {!key}, which is
-    what makes an event earn (or spend) once however often it is delivered: the
-    settlement webhook arriving twice, a retried redemption, an expiry run started
-    twice on the same day. *)
+    what makes an event earn (or spend) once however often it is delivered: the settlement
+    webhook arriving twice, a retried redemption, an expiry run started twice on the same
+    day. *)
 
 open! Core
 

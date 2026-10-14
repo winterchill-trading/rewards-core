@@ -3,8 +3,8 @@
     A customer's tier is the highest tier whose threshold is at most the points they
     earned in the last [window] (entries with [now - window < at <= now]). Earned means
     [Earn], [Bonus], [Reversal] and [Adjustment] entries ({!Kind.counts_for_tier}):
-    spending points on a redemption, or losing them to expiry, never lowers a tier,
-    while a refunded purchase no longer counts. The window total is floored at zero. *)
+    spending points on a redemption, or losing them to expiry, never lowers a tier, while
+    a refunded purchase no longer counts. The window total is floored at zero. *)
 
 open! Core
 

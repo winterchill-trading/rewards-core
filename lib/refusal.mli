@@ -1,5 +1,5 @@
-(** Why the programme refused an operation, as data, so a service can map each case to
-    its own error codes and messages. *)
+(** Why the programme refused an operation, as data, so a service can map each case to its
+    own error codes and messages. *)
 
 open! Core
 

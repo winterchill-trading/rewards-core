@@ -15,8 +15,7 @@ type t = private
 [@@deriving sexp_of, compare, equal]
 
 (** Fails when [points] has the wrong sign for the cause's {!Kind.t}, when [seq] is
-    negative, or when [earning] is given for a cause other than a card purchase or
-    refund. *)
+    negative, or when [earning] is given for a cause other than a card purchase or refund. *)
 val create
   :  user:User_id.t
   -> seq:int

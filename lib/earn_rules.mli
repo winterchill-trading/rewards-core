@@ -2,20 +2,20 @@
 
     {b Purchases.} Points are earned when card spend settles, not when it is authorised,
     so a reversed authorisation never earns. The settled amount is converted to the
-    programme's basis currency at the rate the caller supplies (typically the mid rate
-    of the settlement date), the result is floored to whole basis units, and each unit
-    earns [points_per_unit] times the category's multiplier. A category with
-    multiplier 0 (cash withdrawals, say) earns nothing. Without a rate for a foreign
-    purchase the purchase is refused with [Rate_unavailable]; booking it later, once a
-    rate exists, still earns once because the cause is the purchase id.
+    programme's basis currency at the rate the caller supplies (typically the mid rate of
+    the settlement date), the result is floored to whole basis units, and each unit earns
+    [points_per_unit] times the category's multiplier. A category with multiplier 0 (cash
+    withdrawals, say) earns nothing. Without a rate for a foreign purchase the purchase is
+    refused with [Rate_unavailable]; booking it later, once a rate exists, still earns
+    once because the cause is the purchase id.
 
     {b Refunds.} A refund claws back points in proportion to the refunded share of the
     purchase: after refunds totalling [r] of a purchase of [s] that earned [p], the
     purchase has given back [floor (p * min (r, s) / s)] points in all, so a full refund
-    returns exactly [p] and partial refunds never add up to more. Every refund is
-    booked, with zero points if need be, so the refunded total is always known and a
-    series of small refunds cannot dodge the clawback. A clawback is capped at the
-    customer's balance at the time; points already spent are not recovered later.
+    returns exactly [p] and partial refunds never add up to more. Every refund is booked,
+    with zero points if need be, so the refunded total is always known and a series of
+    small refunds cannot dodge the clawback. A clawback is capped at the customer's
+    balance at the time; points already spent are not recovered later.
 
     {b Actions.} A one-off action (first exchange, first goal reached) earns its bonus
     once per customer, whatever the number of times the event is reported. *)
@@ -31,8 +31,8 @@ type t = private
   }
 [@@deriving sexp_of, compare, equal]
 
-(** Fails on a negative multiplier or [points_per_unit], a bonus that is not positive,
-    or a category or action listed twice. *)
+(** Fails on a negative multiplier or [points_per_unit], a bonus that is not positive, or
+    a category or action listed twice. *)
 val create
   :  basis:Money.Currency.t
   -> ?points_per_unit:int (** default 1 *)
@@ -50,8 +50,8 @@ val bonus : t -> Action.t -> int option
 
 (** The points a settled purchase earns, with the details to keep on the entry. Zero
     points (a zero multiplier, or spend below one basis unit) is a valid answer: the
-    caller books nothing. Refuses a spend that is not positive and a foreign spend
-    without a usable rate. *)
+    caller books nothing. Refuses a spend that is not positive and a foreign spend without
+    a usable rate. *)
 val purchase
   :  t
   -> spend:Money.Amount.t

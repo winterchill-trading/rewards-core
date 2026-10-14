@@ -1,6 +1,6 @@
 (** A points statement for one customer over a period [from <= at < until]: the opening
-    balance, every entry in the period with the balance after it, totals per kind and
-    the closing balance. [opening + sum of totals = closing] always holds ({!check}). *)
+    balance, every entry in the period with the balance after it, totals per kind and the
+    closing balance. [opening + sum of totals = closing] always holds ({!check}). *)
 
 open! Core
 

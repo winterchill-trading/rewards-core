@@ -1,8 +1,7 @@
 (** Loyalty points for banks: an append-only points ledger per customer, earn rules for
-    settled card spend, one-off action bonuses, tiers over a rolling window with
-    benefits, cashback redemption booked through [ledger], an expiry policy and
-    statements. Pure values and state machines; persistence is the {!Store.S} module
-    type. *)
+    settled card spend, one-off action bonuses, tiers over a rolling window with benefits,
+    cashback redemption booked through [ledger], an expiry policy and statements. Pure
+    values and state machines; persistence is the {!Store.S} module type. *)
 
 (** {1 Identifiers} *)
 

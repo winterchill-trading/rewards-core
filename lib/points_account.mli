@@ -4,8 +4,8 @@
 
     Rules enforced by {!apply}, so they hold for any accepted sequence:
     - every entry belongs to this customer and carries the next sequence number;
-    - a cause is booked at most once: the same event again is a [Duplicate] of the
-      first entry, the same cause with other content is refused;
+    - a cause is booked at most once: the same event again is a [Duplicate] of the first
+      entry, the same cause with other content is refused;
     - the balance never goes below zero. *)
 
 open! Core
@@ -20,8 +20,7 @@ val user : t -> User_id.t
 (** The sum of every entry's points; never negative. *)
 val balance : t -> int
 
-(** Points added by [Earn] and [Bonus] entries, before any spending, clawback or
-    expiry. *)
+(** Points added by [Earn] and [Bonus] entries, before any spending, clawback or expiry. *)
 val lifetime_earned : t -> int
 
 (** The number of entries, which is also the next entry's [seq]. *)
@@ -44,16 +43,15 @@ module Applied : sig
 end
 
 (** Checks [entry] against the rules above and returns the new state. A duplicate leaves
-    the state unchanged and is checked before the sequence number, so a redelivered
-    event is recognised whatever [seq] it was given. *)
+    the state unchanged and is checked before the sequence number, so a redelivered event
+    is recognised whatever [seq] it was given. *)
 val apply : t -> Entry.t -> (Applied.t, Refusal.t) Result.t
 
 (** [apply] for every entry, refusing duplicates (a stored ledger has none). *)
 val of_entries : User_id.t -> Entry.t list -> t Or_error.t
 
-(** Builds the next entry for [cause] (with [seq = length t]) and checks it with
-    {!apply}: [`New entry] to append, or [`Duplicate entry] when the event is booked
-    already. *)
+(** Builds the next entry for [cause] (with [seq = length t]) and checks it with {!apply}:
+    [`New entry] to append, or [`Duplicate entry] when the event is booked already. *)
 val prepare
   :  t
   -> cause:Cause.t

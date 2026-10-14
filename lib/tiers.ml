@@ -41,7 +41,8 @@ let validate (t : t) =
   in
   let%map () =
     match
-      List.find_a_dup t.tiers ~compare:(fun (a : Tier.t) b -> String.compare a.code b.code)
+      List.find_a_dup t.tiers ~compare:(fun (a : Tier.t) b ->
+        String.compare a.code b.code)
     with
     | Some (d : Tier.t) -> Or_error.error_s [%message "repeated tier code" ~code:d.code]
     | None -> Ok ()
@@ -59,15 +60,12 @@ let tier_for t ~points =
 
 let window_points t entries ~now =
   let since = Time_ns.sub now t.window in
-  List.sum
-    (module Int)
-    entries
-    ~f:(fun (e : Entry.t) ->
-      if Kind.counts_for_tier (Entry.kind e)
-         && Time_ns.( > ) e.at since
-         && Time_ns.( <= ) e.at now
-      then e.points
-      else 0)
+  List.sum (module Int) entries ~f:(fun (e : Entry.t) ->
+    if Kind.counts_for_tier (Entry.kind e)
+       && Time_ns.( > ) e.at since
+       && Time_ns.( <= ) e.at now
+    then e.points
+    else 0)
   |> Int.max 0
 ;;
 
@@ -87,8 +85,7 @@ let status t entries ~now : Status.t =
   let tier = tier_for t ~points:window_points in
   let next = List.find t.tiers ~f:(fun (x : Tier.t) -> x.threshold > tier.threshold) in
   match next with
-  | None ->
-    { tier; next; window_points; points_to_next = None; progress_percent = 100 }
+  | None -> { tier; next; window_points; points_to_next = None; progress_percent = 100 }
   | Some (n : Tier.t) ->
     let span = n.threshold - tier.threshold in
     let progress = (window_points - tier.threshold) * 100 / span in

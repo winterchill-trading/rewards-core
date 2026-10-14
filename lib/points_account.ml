@@ -68,7 +68,8 @@ let apply t (entry : Entry.t) : (Applied.t, Refusal.t) Result.t =
       else (
         let balance = t.balance + entry.points in
         if balance < 0
-        then Error (Insufficient_points { balance = t.balance; requested = -entry.points })
+        then
+          Error (Insufficient_points { balance = t.balance; requested = -entry.points })
         else (
           let lifetime_earned =
             match Entry.kind entry with

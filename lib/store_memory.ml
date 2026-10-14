@@ -57,9 +57,7 @@ module Make (M : Monad.S) = struct
     M.return
       (if Hashtbl.mem t.redemptions r.id
        then Ok (Hashtbl.set t.redemptions ~key:r.id ~data:r)
-       else
-         Or_error.error_s
-           [%message "no such redemption" ~id:(r.id : Redemption_id.t)])
+       else Or_error.error_s [%message "no such redemption" ~id:(r.id : Redemption_id.t)])
   ;;
 
   let redemptions t =

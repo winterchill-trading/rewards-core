@@ -27,8 +27,8 @@ val fx_spread_bps : t -> standard:int -> int
 (** The tier's fee schedule for [product] in [currency], if it has one. *)
 val fee_schedule : t -> product:string -> currency:Money.Currency.t -> Money.Fee.t option
 
-(** [fee_schedule], or [standard] when the tier has none for the product in
-    [standard]'s currency. *)
+(** [fee_schedule], or [standard] when the tier has none for the product in [standard]'s
+    currency. *)
 val fee : t -> product:string -> standard:Money.Fee.t -> Money.Fee.t
 
 module Stable : sig

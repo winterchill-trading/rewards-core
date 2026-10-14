@@ -1,10 +1,10 @@
 (** Turning points into money on the customer's own account.
 
     Points are redeemed in whole [step]s, each worth [value_per_step] in the programme's
-    basis currency, between [minimum] and [maximum] points. When the account is in
-    another currency the basis value is converted at the rate the caller supplies (a mid
-    rate) and rounded down to the account currency's minor unit, so the bank never pays
-    more than the points are worth. *)
+    basis currency, between [minimum] and [maximum] points. When the account is in another
+    currency the basis value is converted at the rate the caller supplies (a mid rate) and
+    rounded down to the account currency's minor unit, so the bank never pays more than
+    the points are worth. *)
 
 open! Core
 
@@ -58,8 +58,8 @@ module Quote : sig
   end
 end
 
-(** Prices a redemption of [points] for a customer holding [balance], paid into an
-    account in [currency]. Checks, in order: [Too_small], [Too_large], [Not_a_step],
+(** Prices a redemption of [points] for a customer holding [balance], paid into an account
+    in [currency]. Checks, in order: [Too_small], [Too_large], [Not_a_step],
     [Insufficient_points], then the conversion ([Rate_unavailable], [Rate_mismatch]) and
     [Rounds_to_zero]. *)
 val quote

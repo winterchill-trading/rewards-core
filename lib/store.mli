@@ -3,13 +3,13 @@
     offline modes.
 
     Two guarantees make the ledger safe under concurrent writers, and an implementation
-    must provide both atomically per customer (a unique index on (customer, cause key)
-    and on (customer, seq), or a row lock on the customer):
-    - {!S.append} refuses a second entry for the same cause key, answering
-      [Cause_taken] with the stored entry, whatever its sequence number;
+    must provide both atomically per customer (a unique index on (customer, cause key) and
+    on (customer, seq), or a row lock on the customer):
+    - {!S.append} refuses a second entry for the same cause key, answering [Cause_taken]
+      with the stored entry, whatever its sequence number;
     - it refuses an entry whose [seq] is not the customer's current length, answering
-      [Stale]. The engine decided the entry against that length (including the
-      balance check), so a stale entry is re-decided rather than written.
+      [Stale]. The engine decided the entry against that length (including the balance
+      check), so a stale entry is re-decided rather than written.
 
     Redemptions are inserted once per id ({!S.insert_redemption}, first writer wins) and
     then updated in place as their status moves forward. *)

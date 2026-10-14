@@ -10,8 +10,13 @@ type t =
   }
 [@@deriving sexp_of, compare, equal]
 
-let create ~basis ?(points_per_unit = 1) ?(default_multiplier = 1) ?(multipliers = [])
-  ?(bonuses = []) ()
+let create
+  ~basis
+  ?(points_per_unit = 1)
+  ?(default_multiplier = 1)
+  ?(multipliers = [])
+  ?(bonuses = [])
+  ()
   =
   let open Or_error.Let_syntax in
   let%bind () =
@@ -21,7 +26,8 @@ let create ~basis ?(points_per_unit = 1) ?(default_multiplier = 1) ?(multipliers
   in
   let%bind multipliers =
     match Category.Map.of_alist multipliers with
-    | `Duplicate_key c -> Or_error.error_s [%message "category listed twice" (c : Category.t)]
+    | `Duplicate_key c ->
+      Or_error.error_s [%message "category listed twice" (c : Category.t)]
     | `Ok m ->
       (match Map.to_alist m |> List.find ~f:(fun (_, x) -> x < 0) with
        | Some (c, x) ->
@@ -52,7 +58,8 @@ let purchase t ~spend ~category ~rate =
   if not (Amount.is_positive spend)
   then
     Error
-      (Refusal.Invalid (Error.create_s [%message "spend must be positive" (spend : Amount.t)]))
+      (Refusal.Invalid
+         (Error.create_s [%message "spend must be positive" (spend : Amount.t)]))
   else (
     let%map basis_q = Convert.major_units spend ~to_:t.basis ~rate in
     let multiplier = multiplier t category in
@@ -92,22 +99,23 @@ let clawback ~(purchase : Entry.t) ~earlier ~refund ~balance =
   let%bind () =
     if Money.Currency.equal (Amount.currency refund) currency
     then Ok ()
-    else Error (Refusal.Currency_mismatch { expected = currency; got = Amount.currency refund })
+    else
+      Error
+        (Refusal.Currency_mismatch { expected = currency; got = Amount.currency refund })
   in
   let%bind () =
     if Amount.is_positive refund
     then Ok ()
     else
       Error
-        (Refusal.Invalid (Error.create_s [%message "refund must be positive" (refund : Amount.t)]))
+        (Refusal.Invalid
+           (Error.create_s [%message "refund must be positive" (refund : Amount.t)]))
   in
-  let%map before =
-    Amount.sum currency (refunded earlier) |> Refusal.of_or_error
-  in
+  let%map before = Amount.sum currency (refunded earlier) |> Refusal.of_or_error in
   let spend = Amount.minor_units earning.spend in
   let clawed_by total =
-    (* Proportional and cumulative: the share for all refunds so far, minus the share
-       for the refunds before this one, so rounding never adds up past the purchase. *)
+    (* Proportional and cumulative: the share for all refunds so far, minus the share for
+       the refunds before this one, so rounding never adds up past the purchase. *)
     let total = Z.min total spend in
     Z.fdiv (Z.mul (Z.of_int purchase.points) total) spend
   in

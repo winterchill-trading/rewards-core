@@ -39,8 +39,8 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) = struct
     else Error (Cause_conflict { key = Cause.key cause })
   ;;
 
-  (* The shared write path: idempotency by cause first, then the decision, then an
-     append that only lands on the ledger the decision was made against. *)
+  (* The shared write path: idempotency by cause first, then the decision, then an append
+     that only lands on the ledger the decision was made against. *)
   let book t ~user ~cause ~at ~matches ~decide =
     let rec attempt n =
       match%bind account t user with
@@ -53,9 +53,7 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) = struct
             | Error _ as e -> return e
             | Ok None -> return (Ok Outcome.Nothing_to_book)
             | Ok (Some { points; earning; note }) ->
-              (match
-                 Points_account.prepare acct ~cause ~points ~at ?earning ~note ()
-               with
+              (match Points_account.prepare acct ~cause ~points ~at ?earning ~note () with
                | Error _ as e -> return e
                | Ok (`Duplicate existing) -> return (found ~cause ~matches existing)
                | Ok (`New entry) ->
@@ -187,7 +185,8 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) = struct
          (match Redemption.complete r with
           | Ok r -> save t r
           | Error e -> return (Error (Refusal.Invalid e)))
-       | Ok Nothing_to_book -> return (Error (Refusal.Invalid (Error.of_string "unreachable")))
+       | Ok Nothing_to_book ->
+         return (Error (Refusal.Invalid (Error.of_string "unreachable")))
        | Error (Insufficient_points _ as refusal) ->
          (match Redemption.refuse r refusal with
           | Ok r -> save t r

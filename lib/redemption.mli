@@ -6,10 +6,9 @@
          +--points refused------> Refused
     v}
 
-    The record is saved [Accepted] before the points are spent, so a request retried
-    after a crash finds it and finishes the same redemption (same quote, same amount)
-    instead of pricing a new one. Only a [Completed] redemption is paid out
-    ([Booking.cashback]). *)
+    The record is saved [Accepted] before the points are spent, so a request retried after
+    a crash finds it and finishes the same redemption (same quote, same amount) instead of
+    pricing a new one. Only a [Completed] redemption is paid out ([Booking.cashback]). *)
 
 open! Core
 
@@ -42,7 +41,12 @@ val create
   -> t
 
 (** True when a request for [points] by [user] into [account] is a retry of [t]. *)
-val same_request : t -> user:User_id.t -> account:Ledger.Account_id.t -> points:int -> bool
+val same_request
+  :  t
+  -> user:User_id.t
+  -> account:Ledger.Account_id.t
+  -> points:int
+  -> bool
 
 (** [Accepted] to [Completed]; a [Completed] redemption stays as it is. Fails from
     [Refused]. *)

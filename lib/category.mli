@@ -1,4 +1,5 @@
-(** A merchant category that earn rules give a multiplier, such as [travel] or [groceries].
+(** A merchant category that earn rules give a multiplier, such as [travel] or
+    [groceries].
 
     Ids use the ledger's alphabet ([A-Z a-z 0-9 _ - . : / @ +]) and are at most 100
     characters, so they fit into ledger idempotency keys with the prefixes this library

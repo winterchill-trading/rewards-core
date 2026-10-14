@@ -34,12 +34,14 @@ let validate (t : t) =
   else if not (Kind.accepts kind ~points:t.points)
   then
     Or_error.error_s
-      [%message "points have the wrong sign for the kind" (kind : Kind.t) ~points:(t.points : int)]
+      [%message
+        "points have the wrong sign for the kind" (kind : Kind.t) ~points:(t.points : int)]
   else (
     match t.earning, t.cause with
     | None, _ | Some _, (Card_purchase _ | Card_refund _) -> Ok t
     | Some _, _ ->
-      Or_error.error_s [%message "earning details only belong to card purchases and refunds"])
+      Or_error.error_s
+        [%message "earning details only belong to card purchases and refunds"])
 ;;
 
 let create ~user ~seq ~cause ~points ~at ?earning ?(note = "") () =

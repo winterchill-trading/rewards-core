@@ -23,12 +23,9 @@ let create ~user ~from ~until entries =
   if Time_ns.( < ) until from
   then Or_error.error_s [%message "statement period ends before it starts"]
   else (
-    match
-      List.find entries ~f:(fun (e : Entry.t) -> not (User_id.equal e.user user))
-    with
+    match List.find entries ~f:(fun (e : Entry.t) -> not (User_id.equal e.user user)) with
     | Some e ->
-      Or_error.error_s
-        [%message "entry for another customer" ~user:(e.user : User_id.t)]
+      Or_error.error_s [%message "entry for another customer" ~user:(e.user : User_id.t)]
     | None ->
       let before, rest =
         List.partition_tf entries ~f:(fun (e : Entry.t) -> Time_ns.( < ) e.at from)
@@ -66,8 +63,7 @@ let check t =
       if balance = line.balance_after
       then Ok balance
       else
-        Or_error.error_s
-          [%message "running balance differs" ~seq:(line.entry.seq : int)])
+        Or_error.error_s [%message "running balance differs" ~seq:(line.entry.seq : int)])
   in
   match running with
   | Error _ as e -> Or_error.ignore_m e
