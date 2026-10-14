@@ -1,6 +1,6 @@
 (** One customer's points ledger folded into a state: the balance, the causes already
     booked and the entries in order. Pure: {!apply} decides whether an entry may be
-    appended, and a {!Store.S} keeps the entries.
+    appended, and a [Store.S] keeps the entries.
 
     Rules enforced by {!apply}, so they hold for any accepted sequence:
     - every entry belongs to this customer and carries the next sequence number;
