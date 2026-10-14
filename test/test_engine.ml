@@ -380,3 +380,48 @@ let%expect_test "summary and statement" =
     (Ok ())
     |}]
 ;;
+
+let%expect_test "the engine's clawback rule decides partial refunds" =
+  (* 10.00 EUR of travel earns 30 points; three refunds of a third each. *)
+  let rules : (module Clawback_rule.S) list =
+    [ Clawback_rule.default; (module Clawback_rule.Proportional) ]
+  in
+  List.iter rules ~f:(fun clawback ->
+    let (module R) = clawback in
+    printf "%s:\n" R.name;
+    let e = Rewards.create ~clawback (program ()) (Store.create ()) in
+    Rewards.settle_purchase
+      e
+      ~user
+      ~purchase:(src "tx-1")
+      ~spend:(eur "10.00")
+      ~category:(cat "travel")
+      ~rate:None
+      ~at:t0
+    |> print_outcome;
+    List.iteri [ "3.33"; "3.33"; "3.34" ] ~f:(fun i amount ->
+      Rewards.refund_purchase
+        e
+        ~user
+        ~refund:(src (sprintf "rf-%d" i))
+        ~purchase:(src "tx-1")
+        ~amount:(eur amount)
+        ~at:(day 1)
+      |> print_outcome);
+    printf "balance %d\n" (balance e user));
+  [%expect
+    {|
+    cumulative:
+    booked +30 (card_purchase:tx-1)
+    booked -9 (card_refund:rf-0)
+    booked -10 (card_refund:rf-1)
+    booked -11 (card_refund:rf-2)
+    balance 0
+    proportional:
+    booked +30 (card_purchase:tx-1)
+    booked -9 (card_refund:rf-0)
+    booked -9 (card_refund:rf-1)
+    booked -10 (card_refund:rf-2)
+    balance 2
+    |}]
+;;
